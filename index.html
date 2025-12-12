@@ -325,57 +325,6 @@ function generateShareLink() {
     document.getElementById('shareLink').value = url;
 }
 </script>
-
-<div style="margin-top:20px; background:#fff; padding:15px; border-radius:6px; width:100%;">
-    <h3>Shareable Google‑Sheet Style Link</h3>
-    <button onclick="generateShareLink()">Create Share Link</button>
-    <input id="shareLink" style="width:70%; padding:8px; margin-left:10px;" readonly>
-    <button onclick="navigator.clipboard.writeText(document.getElementById('shareLink').value)">Copy</button>
-</div>
-
-
-<script>
-// Generate sharable HTML file + data URL + QR code
-function generateShareables() {
-    const tableHTML = "<html><body>" + document.getElementById('results').outerHTML + "</body></html>";
-
-    // Create downloadable file
-    const blob = new Blob([tableHTML], { type: 'text/html' });
-    const fileURL = URL.createObjectURL(blob);
-    document.getElementById('downloadLink').href = fileURL;
-    document.getElementById('downloadLink').style.display = 'inline-block';
-
-    // Create share URL
-    document.getElementById('shareLink').value = fileURL;
-
-    // Create QR Code
-    const qrContainer = document.getElementById('qrCode');
-    qrContainer.innerHTML = "";
-    new QRCode(qrContainer, fileURL);
-}
-</script>
-
-<!-- QR Code Library -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
-<div style="margin-top:20px; background:#fff; padding:15px; border-radius:6px; width:100%;">
-    <h3>Shareable Link / Download / QR</h3>
-    <button onclick="generateShareables()">Generate Share Options</button>
-
-    <div style="margin-top:10px;">
-        <label>Sharable Link:</label>
-        <input id="shareLink" style="width:60%; padding:8px; margin-left:10px;" readonly>
-        <button onclick="navigator.clipboard.writeText(document.getElementById('shareLink').value)">Copy</button>
-    </div>
-
-    <div style="margin-top:15px;">
-        <a id="downloadLink" href="#" download="Report.html" style="display:none; padding:10px 15px; background:#4CAF50; color:#fff; border-radius:5px; text-decoration:none;">Download HTML Report</a>
-    </div>
-
-    <div style="margin-top:20px;">
-        <h4>QR Code (scan to open report)</h4>
-        <div id="qrCode"></div>
-    </div>
 </div>
 
 </body>
