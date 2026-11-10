@@ -39,7 +39,7 @@
     <label><input type="checkbox" id="selectAll" checked> Select All</label>
     <label><input type="checkbox" id="ffcChk" checked> FFC</label>
     <label><input type="checkbox" id="emxChk" checked> EMX</label>
-    <label><input type="checkbox" id="logChk" checked> Logistic</label>
+    <label><input type="checkbox" id="logChk" checked> i Mile</label>
   </div>
 
   <div style="margin-left:12px; display:flex; gap:8px; align-items:center;">
@@ -68,7 +68,7 @@
     </div>
 
     <div class="box">
-        <h3>Logistic Courier</h3>
+        <h3>i Mile Courier</h3>
         <textarea id="logistic" placeholder="Paste AWBs, one per line"></textarea>
     </div>
 </div>
@@ -186,7 +186,7 @@
         let headers = [];
         if(showFFC) headers.push({label:'FFC - AWB', id:'ffc_awb'},{label:'FFC - Shipments', id:'ffc_ship'},{label:'FFC - Packages', id:'ffc_pkg'});
         if(showEMX) headers.push({label:'EMX - AWB', id:'emx_awb'},{label:'EMX - Shipments', id:'emx_ship'},{label:'EMX - Packages', id:'emx_pkg'});
-        if(showLOG) headers.push({label:'Logistic - AWB', id:'log_awb'},{label:'Logistic - Shipments', id:'log_ship'},{label:'Logistic - Packages', id:'log_pkg'});
+        if(showLOG) headers.push({label:'i Mile - AWB', id:'log_awb'},{label:'i Mile - Shipments', id:'log_ship'},{label:'i Mile - Packages', id:'log_pkg'});
 
         let html = '';
         // totals summary row in table (additional top row)
@@ -268,8 +268,7 @@
         let headers = [];
         if(showFFC) headers.push('FFC - AWB','FFC - Shipments','FFC - Packages');
         if(showEMX) headers.push('EMX - AWB','EMX - Shipments','EMX - Packages');
-        if(showLOG) headers.push('Logistic - AWB','Logistic - Shipments','Logistic - Packages');
-
+        if(showLOG) headers.push('i Mile - AWB','i Mile - Shipments','i Mile - Packages');
         let rows = [];
         rows.push(['Manifest Date:', formatDate(new Date())]);
         rows.push([]);
