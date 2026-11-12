@@ -1,330 +1,390 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Courier Dashboard — Updated</title>
 <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background:#f4f4f4; }
-    h1 { margin-bottom: 10px; }
-
-    .controls { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
-    .filters { background:#fff; padding:10px;border-radius:6px; box-shadow:0 1px 3px rgba(0,0,0,.08); display:flex; gap:12px; align-items:center; }
+    :root { color-scheme: light !important; }
+    html, body { background:#ffffff !important; color:#111111 !important; }
+    body { font-family:Arial,sans-serif; padding:20px; margin:0; }
+    h1, h2, h3, label, span, div, th, td { color:#111111 !important; }
+    h1 { margin:0 0 10px; }
+    .controls { display:flex; align-items:center; gap:12px; margin-bottom:12px; flex-wrap:wrap; }
+    .filters { background:#ffffff !important; color:#111111 !important; padding:10px; border:1px solid #dddddd; border-radius:6px; box-shadow:0 1px 3px rgba(0,0,0,.08); display:flex; gap:12px; align-items:center; }
     .filters label { display:flex; align-items:center; gap:6px; font-size:14px; }
-
-    .row { display: flex; justify-content: space-between; gap:12px; margin-bottom: 12px; }
-    .box { width: 32%; }
-    textarea { width: 100%; height: 180px; padding: 10px; resize: vertical; }
-
-    #results { margin-top: 10px; width: 100%; border-collapse: collapse; background:#fff; }
-    #results th, #results td { border: 1px solid #ccc; padding: 8px; text-align: center; }
-    #results thead th { background:#f0f0f0; }
-
-    .summary { background:#fff; padding:10px; border-radius:6px; display:flex; gap:18px; align-items:center; margin-bottom:8px; }
-    .summary div { font-weight:600; }
-
-    .right { margin-left:auto; display:flex; gap:8px; }
-
-    button { padding: 8px 12px; cursor: pointer; }
-    input[type=text] { padding:6px 8px; }
-
+    .row { display:flex; justify-content:space-between; gap:12px; margin-bottom:12px; }
+    .box { width:32%; min-width:0; }
+    .box h3 { margin:18px 0; }
+    textarea, input[type=text] { background:#ffffff !important; color:#111111 !important; border:1px solid #bdbdbd !important; border-radius:3px; }
+    textarea { width:100%; height:180px; padding:10px; resize:vertical; box-sizing:border-box; }
+    textarea::placeholder, input::placeholder { color:#777777 !important; opacity:1; }
+    input[type=text] { padding:7px 8px; }
+    input[type=checkbox] { accent-color:#333333; }
+    button { background:#f2f2f2 !important; color:#111111 !important; border:1px solid #bdbdbd !important; border-radius:3px; padding:8px 12px; cursor:pointer; }
+    button:hover { background:#e7e7e7 !important; }
+    #results { margin-top:10px; width:100%; border-collapse:collapse; background:#ffffff !important; color:#111111 !important; }
+    #results th, #results td { border:1px solid #cccccc; padding:8px; text-align:center; color:#111111 !important; background:#ffffff !important; }
+    #results thead th { background:#f3f3f3 !important; }
+    #results .courier-title { background:#eeeeee !important; font-weight:700; }
+    #results .spacer-cell { border:none !important; background:#ffffff !important; min-width:12px; width:12px; padding:0; }
+    .summary { background:#ffffff !important; color:#111111 !important; border:1px solid #dddddd; padding:10px; border-radius:6px; display:flex; gap:18px; align-items:center; margin-bottom:8px; flex-wrap:wrap; }
+    .summary div { color:#111111 !important; font-weight:600; }
+    .right { margin-left:auto; display:flex; gap:8px; flex-wrap:wrap; }
     .hidden { display:none !important; }
+    @media (max-width:760px) {
+        body { padding:10px; }
+        .row { flex-direction:column; }
+        .box { width:100%; }
+        .controls { align-items:flex-start; }
+        .right { margin-left:0; }
+        #results { font-size:12px; }
+        #results th, #results td { padding:5px; }
+    }
 </style>
 </head>
 <body>
-
 <h1>Courier AWB Processing Dashboard</h1>
 
 <div class="controls">
-  <div class="filters">
-    <label><input type="checkbox" id="selectAll" checked> Select All</label>
-    <label><input type="checkbox" id="ffcChk" checked> FFC</label>
-    <label><input type="checkbox" id="emxChk" checked> EMX</label>
-    <label><input type="checkbox" id="logChk" checked> i Mile</label>
-  </div>
-
-  <div style="margin-left:12px; display:flex; gap:8px; align-items:center;">
-    <label>AWB filter: <input type="text" id="awbFilter" placeholder="enter AWB to filter"></label>
-    <button onclick="applyAwbFilter()">Apply</button>
-    <button onclick="clearAwbFilter()">Clear</button>
-  </div>
-
-  <div class="right">
-    <button onclick="generateResult()">Generate Result</button>
-    <button onclick="exportExcel()">Export Manifest (Excel)</button>
-    <button onclick="copyResult()">Copy Result</button>
-    <button onclick="clearAll()">Clear All</button>
-  </div>
+    <div class="filters">
+        <label><input type="checkbox" id="selectAll" checked> Select All</label>
+        <label><input type="checkbox" id="ffcChk" checked> FFC</label>
+        <label><input type="checkbox" id="emxChk" checked> EMX</label>
+        <label><input type="checkbox" id="logChk" checked> i Mile</label>
+    </div>
+    <div style="margin-left:12px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+        <label>AWB filter: <input type="text" id="awbFilter" placeholder="enter AWB to filter"></label>
+        <button onclick="applyAwbFilter()">Apply</button>
+        <button onclick="clearAwbFilter()">Clear</button>
+    </div>
+    <div class="right">
+        <button onclick="generateResult()">Generate Result</button>
+        <button onclick="exportExcel()">Export Manifest (Excel)</button>
+        <button onclick="copyResult()">Copy Result</button>
+        <button onclick="clearAll()">Clear All</button>
+    </div>
 </div>
 
 <div class="row">
     <div class="box">
         <h3>FFC Courier</h3>
-        <textarea id="ffc" placeholder="Paste AWBs, one per line"></textarea>
+        <textarea id="ffc" placeholder="Paste AWB list or full table here"></textarea>
     </div>
-
     <div class="box">
         <h3>EMX Courier</h3>
-        <textarea id="emx" placeholder="Paste AWBs, one per line"></textarea>
+        <textarea id="emx" placeholder="Paste AWB list or full table here"></textarea>
     </div>
-
     <div class="box">
         <h3>i Mile Courier</h3>
-        <textarea id="logistic" placeholder="Paste AWBs, one per line"></textarea>
+        <textarea id="logistic" placeholder="Paste AWB list or full table here"></textarea>
     </div>
 </div>
 
 <div class="summary" id="summary">
-  <div id="totalAwb">Total AWB: 0</div>
-  <div id="totalShip">Total Shipments: 0</div>
-  <div id="totalPkg">Total Packages: 0</div>
-  <div style="margin-left:auto; font-weight:500;">Manifest date: <span id="manifestDate"></span></div>
+    <div id="totalAwb">Total AWB: 0</div>
+    <div id="totalShip">Total Shipments: 0</div>
+    <div id="totalPkg">Total Packages: 0</div>
+    <div style="margin-left:auto; font-weight:500;">Manifest date: <span id="manifestDate"></span></div>
 </div>
 
-<table id="results">
-  <!-- generated content -->
-</table>
+<table id="results"></table>
 
 <script>
-    // --- Persistence ---
-    window.onload = () => {
-        document.getElementById("ffc").value = localStorage.getItem("ffc") || "";
-        document.getElementById("emx").value = localStorage.getItem("emx") || "";
-        document.getElementById("logistic").value = localStorage.getItem("logistic") || "";
-        document.getElementById('manifestDate').innerText = formatDate(new Date());
+let currentAwbFilter = "";
 
-        // checkbox state
-        ['ffcChk','emxChk','logChk','selectAll'].forEach(id=>{
-          const v = localStorage.getItem(id);
-          if(v!=='null' && v!==null) document.getElementById(id).checked = (v==='true');
+window.onload = () => {
+    ["ffc", "emx", "logistic"].forEach(id => {
+        document.getElementById(id).value = localStorage.getItem(id) || "";
+        document.getElementById(id).addEventListener("input", () => {
+            localStorage.setItem(id, document.getElementById(id).value);
         });
+    });
 
-        // reflect select all
-        document.getElementById('selectAll').addEventListener('change', onSelectAllToggle);
-        ['ffcChk','emxChk','logChk'].forEach(id=> document.getElementById(id).addEventListener('change', onCourierToggle));
+    document.getElementById("manifestDate").textContent = formatDate(new Date());
 
-        // save on type
-        ["ffc", "emx", "logistic"].forEach(id => {
-            document.getElementById(id).addEventListener("input", () => {
-                localStorage.setItem(id, document.getElementById(id).value);
-            });
-        });
+    ["ffcChk", "emxChk", "logChk", "selectAll"].forEach(id => {
+        const saved = localStorage.getItem(id);
+        if (saved !== null) document.getElementById(id).checked = saved === "true";
+    });
 
-        // save checkboxes on change
-        ['ffcChk','emxChk','logChk','selectAll'].forEach(id=>{
-          document.getElementById(id).addEventListener('change', ()=> localStorage.setItem(id, document.getElementById(id).checked));
-        });
+    document.getElementById("selectAll").addEventListener("change", onSelectAllToggle);
+    ["ffcChk", "emxChk", "logChk"].forEach(id => {
+        document.getElementById(id).addEventListener("change", onCourierToggle);
+    });
+    generateResult();
+};
 
-        generateResult();
+/*
+ * Supports:
+ * 1) Existing format: one AWB per line.
+ * 2) Pasted table / Markdown table: ignores columns 1–3 and reads column 4 (AWB).
+ *    Example: 1000049332659 (1) => AWB 1000049332659, packages 1.
+ *    Example: 1000049332103 (3) => AWB 1000049332103, packages 3.
+ * Duplicate AWBs are combined; shipment remains 1 per unique AWB.
+ */
+function processData(raw) {
+    const map = new Map();
+    const lines = String(raw || "").split(/\r?\n/);
+
+    function addAwbCell(cell) {
+        if (!cell) return;
+        let value = String(cell).trim().replace(/^["']|["']$/g, "").trim();
+        if (!value) return;
+
+        // Remove optional markdown/code formatting around the cell.
+        value = value.replace(/^`+|`+$/g, "").trim();
+
+        // A cell may contain AWB followed by package count in parentheses.
+        const match = value.match(/(\d{6,})(?:\s*\(\s*(\d+)\s*\))?/);
+        if (!match) return;
+
+        const awb = match[1];
+        const packages = match[2] ? parseInt(match[2], 10) : 1;
+        if (!Number.isFinite(packages) || packages < 0) return;
+
+        const current = map.get(awb) || 0;
+        map.set(awb, current + packages);
+    }
+
+    for (const originalLine of lines) {
+        const line = originalLine.trim();
+        if (!line) continue;
+
+        // Markdown table: always read only the 4th cell (AWB); ignore Sno, Order, Ref.
+        if (line.includes("|")) {
+            const cells = line.split("|").map(c => c.trim());
+            const useful = cells.length && cells[0] === "" ? cells.slice(1) : cells;
+            const trimmed = useful.length && useful[useful.length - 1] === ""
+                ? useful.slice(0, -1) : useful;
+
+            if (trimmed.length < 4) continue;
+            const first = trimmed[0].replace(/[*_]/g, "").toLowerCase();
+            if (first === "sno" || first.includes("---")) continue;
+            if (trimmed.every(c => /^:?-{2,}:?$/.test(c))) continue;
+
+            addAwbCell(trimmed[3]);
+            continue;
+        }
+
+        // Tab-separated or multi-column copied spreadsheet rows.
+        if (line.includes("\t")) {
+            const cells = line.split("\t");
+            if (cells.length >= 4) {
+                addAwbCell(cells[3]);
+                continue;
+            }
+        }
+
+        // Existing simple input: one AWB per line.
+        addAwbCell(line);
+    }
+
+    return Array.from(map.entries())
+        .map(([awb, packages]) => ({ awb, shipment: 1, package: packages }))
+        .sort((a, b) => a.awb.localeCompare(b.awb));
+}
+
+function onSelectAllToggle(e) {
+    const on = e.target.checked;
+    ["ffcChk", "emxChk", "logChk"].forEach(id => {
+        document.getElementById(id).checked = on;
+        localStorage.setItem(id, on);
+    });
+    localStorage.setItem("selectAll", on);
+    generateResult();
+}
+
+function onCourierToggle() {
+    const all = ["ffcChk", "emxChk", "logChk"].every(id => document.getElementById(id).checked);
+    document.getElementById("selectAll").checked = all;
+    localStorage.setItem("selectAll", all);
+    ["ffcChk", "emxChk", "logChk"].forEach(id =>
+        localStorage.setItem(id, document.getElementById(id).checked)
+    );
+    generateResult();
+}
+
+function applyAwbFilter() {
+    currentAwbFilter = document.getElementById("awbFilter").value.trim();
+    generateResult();
+}
+function clearAwbFilter() {
+    document.getElementById("awbFilter").value = "";
+    currentAwbFilter = "";
+    generateResult();
+}
+
+function tally(arr) {
+    return {
+        awb: arr.length,
+        shipment: arr.reduce((sum, r) => sum + r.shipment, 0),
+        package: arr.reduce((sum, r) => sum + r.package, 0)
     };
+}
 
-    function onSelectAllToggle(e){
-      const on = e.target.checked;
-      ['ffcChk','emxChk','logChk'].forEach(id=> document.getElementById(id).checked = on);
-      localStorage.setItem('ffcChk',on);
-      localStorage.setItem('emxChk',on);
-      localStorage.setItem('logChk',on);
-      generateResult();
-    }
+function getCourierData() {
+    const all = [
+        { key: "ffc", name: "FFC Courier", checked: "ffcChk", data: processData(document.getElementById("ffc").value) },
+        { key: "emx", name: "EMX Courier", checked: "emxChk", data: processData(document.getElementById("emx").value) },
+        { key: "log", name: "i Mile Courier", checked: "logChk", data: processData(document.getElementById("logistic").value) }
+    ];
+    return all.map(c => {
+        const filter = currentAwbFilter;
+        return {
+            ...c,
+            visible: document.getElementById(c.checked).checked,
+            data: filter ? c.data.filter(r => r.awb.includes(filter)) : c.data
+        };
+    });
+}
 
-    function onCourierToggle(){
-      // if any unchecked -> uncheck selectAll
-      const all = ['ffcChk','emxChk','logChk'].every(id=> document.getElementById(id).checked);
-      document.getElementById('selectAll').checked = all;
-      localStorage.setItem('selectAll', all);
-      generateResult();
-    }
+function generateResult() {
+    const couriers = getCourierData();
+    const visible = couriers.filter(c => c.visible);
+    const totals = visible.reduce((t, c) => {
+        const x = tally(c.data);
+        t.awb += x.awb;
+        t.shipment += x.shipment;
+        t.package += x.package;
+        return t;
+    }, { awb: 0, shipment: 0, package: 0 });
 
-    function processData(raw) {
-        let lines = raw.trim().split(/\n+/).map(x => x.trim()).filter(x => x !== "");
-        let map = {};
+    document.getElementById("totalAwb").textContent = "Total AWB: " + totals.awb;
+    document.getElementById("totalShip").textContent = "Total Shipments: " + totals.shipment;
+    document.getElementById("totalPkg").textContent = "Total Packages: " + totals.package;
 
-        lines.forEach(a => {
-            map[a] = (map[a] || 0) + 1;
+    let html = "<thead><tr>";
+    visible.forEach((c, i) => {
+        if (i > 0) html += '<th class="spacer-cell"></th>';
+        html += '<th colspan="3" class="courier-title">' + escapeHtml(c.name) + "</th>";
+    });
+    html += "</tr><tr>";
+    visible.forEach((c, i) => {
+        if (i > 0) html += '<th class="spacer-cell"></th>';
+        html += "<th>AWB</th><th>No of Shipment</th><th>No of Packaging</th>";
+    });
+    html += "</tr></thead><tbody>";
+
+    const maxRows = Math.max(0, ...visible.map(c => c.data.length));
+    for (let i = 0; i < maxRows; i++) {
+        html += "<tr>";
+        visible.forEach((c, index) => {
+            if (index > 0) html += '<td class="spacer-cell"></td>';
+            const r = c.data[i];
+            html += r
+                ? '<td>' + escapeHtml(r.awb) + '</td><td>1</td><td>' + r.package + "</td>"
+                : "<td></td><td></td><td></td>";
         });
-
-        return Object.keys(map).map(k => ({ awb: k, shipment: 1, package: map[k] }));
+        html += "</tr>";
     }
 
-    // apply AWB filter
-    let currentAwbFilter = "";
-    function applyAwbFilter(){
-      currentAwbFilter = document.getElementById('awbFilter').value.trim();
-      generateResult();
+    if (visible.length) {
+        html += '<tr style="font-weight:700;background:#fafafa;">';
+        visible.forEach((c, i) => {
+            if (i > 0) html += '<td class="spacer-cell"></td>';
+            const t = tally(c.data);
+            html += "<td>Total (" + t.awb + " AWB)</td><td>" + t.shipment + "</td><td>" + t.package + "</td>";
+        });
+        html += "</tr>";
     }
-    function clearAwbFilter(){ document.getElementById('awbFilter').value=''; currentAwbFilter=''; generateResult(); }
+    html += "</tbody>";
+    document.getElementById("results").innerHTML = html;
+}
 
-    function generateResult() {
-        const ffcData = processData(document.getElementById("ffc").value);
-        const emxData = processData(document.getElementById("emx").value);
-        const logData = processData(document.getElementById("logistic").value);
+function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, ch => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[ch]));
+}
 
-        const showFFC = document.getElementById('ffcChk').checked;
-        const showEMX = document.getElementById('emxChk').checked;
-        const showLOG = document.getElementById('logChk').checked;
+function copyResult() {
+    const table = document.getElementById("results");
+    if (!table.innerHTML.trim()) {
+        alert("Please generate the result first.");
+        return;
+    }
+    const range = document.createRange();
+    range.selectNode(table);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+    document.execCommand("copy");
+    selection.removeAllRanges();
+    alert("Result Copied!");
+}
 
-        // filter by AWB if provided (only keep matching AWB rows)
-        function applyAwb(arr){ if(!currentAwbFilter) return arr; return arr.filter(r=> r.awb.includes(currentAwbFilter)); }
-        const ffc = applyAwb(ffcData);
-        const emx = applyAwb(emxData);
-        const log = applyAwb(logData);
+function clearAll() {
+    ["ffc", "emx", "logistic"].forEach(id => {
+        document.getElementById(id).value = "";
+        localStorage.removeItem(id);
+    });
+    document.getElementById("awbFilter").value = "";
+    currentAwbFilter = "";
+    generateResult();
+}
 
-        // compute totals
-        const totals = { awb:0, shipment:0, package:0 };
-        const sumUnique = new Set();
-        function addToTotals(arr){ arr.forEach(r=>{ sumUnique.add(r.awb); totals.shipment += r.shipment; totals.package += r.package; }); }
-        if(showFFC) addToTotals(ffc);
-        if(showEMX) addToTotals(emx);
-        if(showLOG) addToTotals(log);
-        totals.awb = sumUnique.size;
+function formatDate(d) {
+    const dd = String(d.getDate()).padStart(2, "0");
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    return dd + "/" + mm + "/" + d.getFullYear();
+}
 
-        document.getElementById('totalAwb').innerText = 'Total AWB: ' + totals.awb;
-        document.getElementById('totalShip').innerText = 'Total Shipments: ' + totals.shipment;
-        document.getElementById('totalPkg').innerText = 'Total Packages: ' + totals.package;
-
-        // build table columns dynamically — each courier has 3 cols
-        // header
-        let headers = [];
-        if(showFFC) headers.push({label:'FFC - AWB', id:'ffc_awb'},{label:'FFC - Shipments', id:'ffc_ship'},{label:'FFC - Packages', id:'ffc_pkg'});
-        if(showEMX) headers.push({label:'EMX - AWB', id:'emx_awb'},{label:'EMX - Shipments', id:'emx_ship'},{label:'EMX - Packages', id:'emx_pkg'});
-        if(showLOG) headers.push({label:'i Mile - AWB', id:'log_awb'},{label:'i Mile - Shipments', id:'log_ship'},{label:'i Mile - Packages', id:'log_pkg'});
-
-        let html = '';
-        // totals summary row in table (additional top row)
-        html += '<thead><tr>';
-        headers.forEach(h=> html += `<th>${h.label}</th>`);
-        html += '</tr></thead>';
-
-        // compute max rows among visible couriers
-        const maxRows = Math.max( showFFC? ffc.length:0, showEMX? emx.length:0, showLOG? log.length:0 );
-
-        html += '<tbody>';
-        for(let i=0;i<maxRows;i++){
-            html += '<tr>';
-            if(showFFC){ const r = ffc[i]; html += r? `<td>${r.awb}</td><td>${r.shipment}</td><td>${r.package}</td>` : '<td></td><td></td><td></td>'; }
-            if(showEMX){ const r = emx[i]; html += r? `<td>${r.awb}</td><td>${r.shipment}</td><td>${r.package}</td>` : '<td></td><td></td><td></td>'; }
-            if(showLOG){ const r = log[i]; html += r? `<td>${r.awb}</td><td>${r.shipment}</td><td>${r.package}</td>` : '<td></td><td></td><td></td>'; }
-            html += '</tr>';
-        }
-        // footer totals row inside table
-        if(headers.length>0){
-          html += '<tr style="font-weight:700; background:#fafafa;">';
-          // show totals per courier
-          if(showFFC){ const t = tally(ffc); html += `<td colspan="1">Total</td><td>${t.shipment}</td><td>${t.package}</td>`; }
-          if(showEMX){ const t = tally(emx); html += `<td colspan="1">Total</td><td>${t.shipment}</td><td>${t.package}</td>`; }
-          if(showLOG){ const t = tally(log); html += `<td colspan="1">Total</td><td>${t.shipment}</td><td>${t.package}</td>`; }
-          html += '</tr>';
-        }
-        html += '</tbody>';
-
-        document.getElementById('results').innerHTML = html;
+/*
+ * Exports an Excel-readable .xls (HTML table). AWB cells are numeric cells
+ * with a zero-decimal number format, preventing scientific notation.
+ */
+function exportExcel() {
+    const couriers = getCourierData().filter(c => c.visible);
+    if (!couriers.length) {
+        alert("Please select at least one courier.");
+        return;
     }
 
-    function tally(arr){ const s = {awb:0, shipment:0, package:0}; const set = new Set(); arr.forEach(r=>{ set.add(r.awb); s.shipment += r.shipment; s.package += r.package; }); s.awb = set.size; return s; }
+    let rows = [];
+    rows.push('<tr><td colspan="' + (couriers.length * 4 - 1) + '">Manifest Date: ' + formatDate(new Date()) + "</td></tr>");
+    rows.push("<tr>" + couriers.map((c, i) =>
+        (i ? '<td></td>' : "") + '<th colspan="3">' + escapeHtml(c.name) + "</th>"
+    ).join("") + "</tr>");
+    rows.push("<tr>" + couriers.map((c, i) =>
+        (i ? "<td></td>" : "") + "<th>AWB</th><th>No of Shipment</th><th>No of Packaging</th>"
+    ).join("") + "</tr>");
 
-    function copyResult(){
-        const table = document.getElementById("results");
-        let range = document.createRange();
-        range.selectNode(table);
-        window.getSelection().removeAllRanges();
-        window.getSelection().addRange(range);
-        document.execCommand("copy");
-        alert("Result Copied!");
+    const maxRows = Math.max(0, ...couriers.map(c => c.data.length));
+    for (let i = 0; i < maxRows; i++) {
+        let row = "<tr>";
+        couriers.forEach((c, index) => {
+            if (index) row += "<td></td>";
+            const r = c.data[i];
+            if (r) {
+                row += '<td style="mso-number-format:0;">' + r.awb + "</td><td>1</td><td>" + r.package + "</td>";
+            } else {
+                row += "<td></td><td></td><td></td>";
+            }
+        });
+        row += "</tr>";
+        rows.push(row);
     }
 
-    function clearAll(){
-        localStorage.removeItem('ffc'); localStorage.removeItem('emx'); localStorage.removeItem('logistic');
-        document.getElementById("ffc").value = "";
-        document.getElementById("emx").value = "";
-        document.getElementById("logistic").value = "";
-        document.getElementById('awbFilter').value=''; currentAwbFilter='';
-        document.getElementById('results').innerHTML = '';
-        document.getElementById('totalAwb').innerText = 'Total AWB: 0';
-        document.getElementById('totalShip').innerText = 'Total Shipments: 0';
-        document.getElementById('totalPkg').innerText = 'Total Packages: 0';
-    }
+    rows.push("<tr>" + couriers.map((c, i) => {
+        const t = tally(c.data);
+        return (i ? "<td></td>" : "") + "<td>Total (" + t.awb + " AWB)</td><td>" + t.shipment + "</td><td>" + t.package + "</td>";
+    }).join("") + "</tr>");
 
-    function formatDate(d){
-      const dd = String(d.getDate()).padStart(2,'0');
-      const mm = String(d.getMonth()+1).padStart(2,'0');
-      const yyyy = d.getFullYear();
-      return dd + '/' + mm + '/' + yyyy;
-    }
-
-    function exportExcel(){
-        // We'll produce CSV that opens in Excel. Keep same layout as displayed and include totals and manifest date in filename.
-        const showFFC = document.getElementById('ffcChk').checked;
-        const showEMX = document.getElementById('emxChk').checked;
-        const showLOG = document.getElementById('logChk').checked;
-        const ffc = processData(document.getElementById("ffc").value);
-        const emx = processData(document.getElementById("emx").value);
-        const log = processData(document.getElementById("logistic").value);
-
-        function applyAwb(arr){ if(!currentAwbFilter) return arr; return arr.filter(r=> r.awb.includes(currentAwbFilter)); }
-        const f = applyAwb(ffc);
-        const e = applyAwb(emx);
-        const l = applyAwb(log);
-
-        // Build header array
-        let headers = [];
-        if(showFFC) headers.push('FFC - AWB','FFC - Shipments','FFC - Packages');
-        if(showEMX) headers.push('EMX - AWB','EMX - Shipments','EMX - Packages');
-        if(showLOG) headers.push('i Mile - AWB','i Mile - Shipments','i Mile - Packages');
-        let rows = [];
-        rows.push(['Manifest Date:', formatDate(new Date())]);
-        rows.push([]);
-        if(headers.length>0) rows.push(headers);
-
-        const maxRows = Math.max(showFFC? f.length:0, showEMX? e.length:0, showLOG? l.length:0);
-        for(let i=0;i<maxRows;i++){
-          let row = [];
-          if(showFFC){ const r = f[i]; row.push(r? r.awb: '', r? r.shipment: '', r? r.package: ''); }
-          if(showEMX){ const r = e[i]; row.push(r? r.awb: '', r? r.shipment: '', r? r.package: ''); }
-          if(showLOG){ const r = l[i]; row.push(r? r.awb: '', r? r.shipment: '', r? r.package: ''); }
-          rows.push(row);
-        }
-
-        // totals per courier
-        let totalRow = [];
-        if(showFFC){ const t = tally(f); totalRow.push('Total', t.shipment, t.package); }
-        if(showEMX){ const t = tally(e); totalRow.push('Total', t.shipment, t.package); }
-        if(showLOG){ const t = tally(l); totalRow.push('Total', t.shipment, t.package); }
-        rows.push([]);
-        rows.push(totalRow);
-
-        // convert to CSV
-        const csv = rows.map(r=> r.map(cell=> '"'+String(cell||'')+'"').join(',')).join('\n');
-
-        const date = new Date();
-        const dd = String(date.getDate()).padStart(2,'0');
-        const mm = String(date.getMonth()+1).padStart(2,'0');
-        const yyyy = date.getFullYear();
-        const filename = `Manifest_${dd}-${mm}-${yyyy}.csv`;
-
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        const url = URL.createObjectURL(blob);
-        link.setAttribute('href', url);
-        link.setAttribute('download', filename);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-    }
-
-</script>
-
-
-<script>
-// Generate sharable link (data URL)
-function generateShareLink() {
-    const tableHTML = document.getElementById('results').outerHTML;
-    const blob = new Blob([tableHTML], { type: 'text/html' });
+    const excelHtml = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>Manifest</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table border="1">' + rows.join("") + "</table></body></html>";
+    const blob = new Blob(["\ufeff", excelHtml], { type: "application/vnd.ms-excel;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
-    document.getElementById('shareLink').value = url;
+    const link = document.createElement("a");
+    const d = new Date();
+    link.href = url;
+    link.download = "Manifest_" + String(d.getDate()).padStart(2, "0") + "-" +
+        String(d.getMonth() + 1).padStart(2, "0") + "-" + d.getFullYear() + ".xls";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
 }
 </script>
-</div>
-
 </body>
 </html>
